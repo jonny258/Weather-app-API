@@ -9,9 +9,9 @@ const weatherButton = document.querySelector("#weatherButton")
 const searchHistoryDisplay = document.querySelector("#searchHistoryDisplay")
 
 //Main body DOM elements
-const weatherDisplay = document.querySelector("#weatherDisplay") //parent
-const weatherHeader = document.querySelector("#weatherHeader") //child
-const weatherForcast = document.querySelector("#weatherForcast") //child
+const weatherDisplay = document.querySelector(".weatherDisplay") //parent
+const weatherHeader = document.querySelector(".weatherHeader") //child
+const weatherForcast = document.querySelector(".weatherForcast") //child
 
 //day.js DOM elements
 const localTime = document.querySelector("#localTime")
@@ -45,9 +45,51 @@ function displayHistory(history){
     }
 }
 
+function displayWeatherHeader(data){
+    //All the values that will go in the elements
+    let name = data.city.name
+    let date = dayjs().format('M/D/YYYY')
+    let temp = data.list[0].main.temp
+    let feelsLikeTemp = data.list[0].main.feels_like
+    let windSpeed = data.list[0].wind.speed
+    let humidity = data.list[0].main.humidity
+    let weatherIconURL = `https://openweathermap.org/img/w/${data.list[0].weather[0].icon}.png`
+
+    //create all elements
+    let curWeatherParent = document.createElement("div")
+    let curWeatherCardBody = document.createElement("div")
+    let cardTitle = document.createElement("h1")
+    let cardTemp = document.createElement("p")
+    let cardWindSpeed = document.createElement("p")
+    let cardHumidity = document.createElement("p")
+    let cardIcon= document.createElement("img")
+
+    //style all elements with classes from https://getbootstrap.com/docs/5.0/components/card/
+    //give all the element there content
+    curWeatherParent.setAttribute('class', 'card')
+    curWeatherCardBody.setAttribute('class', 'card-body')
+    cardTitle.setAttribute('class', 'card-title')
+    cardTitle.textContent = name + " (" + date + ")"
+    cardTemp.setAttribute('class', 'card-text')
+    cardTemp.textContent = "Actual Temperature: " + temp + "°F, But feels like: " + feelsLikeTemp + "°F"
+    cardWindSpeed.setAttribute('class', 'card-text')
+    cardWindSpeed.textContent ="Wind Speed: " + windSpeed + " MPH"
+    cardHumidity.setAttribute('class', 'card-text')
+    cardHumidity.textContent = "Humidity: " + humidity + "%"
+    cardIcon.setAttribute("src", weatherIconURL)
+
+    //append all into one card
+    curWeatherParent.append(cardTitle)
+    cardTitle.append(cardIcon)
+    curWeatherParent.append(curWeatherCardBody)
+    curWeatherCardBody.append(cardTemp, cardWindSpeed, cardHumidity)
+
+    weatherHeader.append(curWeatherParent)
+    console.log(data.list[0])
+}
+
 
 function getWeather(data){
-    let name = data.name
     let lat = data.lat
     let lon = data.lon
     let requestURL = `${weatherApiRootUrl}/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${weatherApiKey}`
@@ -56,7 +98,8 @@ function getWeather(data){
       return data.json();
     })
     .then(function (data) {
-        console.log(data)
+        displayWeatherHeader(data)
+        //displayWeatherForcast(data)
     })
 
 }
