@@ -40,12 +40,14 @@ function displayHistory(history){
         historyItem.textContent = history[i]
         searchHistoryDisplay.append(historyItem)
         historyItem.addEventListener("click", function(){
-            console.log(historyItem.textContent)
+            weatherInput.value = historyItem.textContent
+            getCoordinates(historyItem.textContent)
         })
     }
 }
 
 function displayWeatherHeader(data){
+    weatherHeader.innerHTML = ""
     //All the values that will go in the elements
     let name = data.city.name
     let date = dayjs().format('M/D/YYYY')
@@ -84,8 +86,59 @@ function displayWeatherHeader(data){
     curWeatherParent.append(curWeatherCardBody)
     curWeatherCardBody.append(cardTemp, cardWindSpeed, cardHumidity)
 
+    //append to the html doc
     weatherHeader.append(curWeatherParent)
-    console.log(data.list[0])
+}
+
+function displayWeatherForcast(data){
+    weatherForcast.innerHTML = ""
+    let forcastTitle = document.createElement("h1")
+    forcastTitle.textContent = "5-day forcast:"
+    let forcastBody = document.createElement("div")
+    forcastBody.setAttribute('class', 'd-flex')
+    forcastBody.setAttribute('style', 'width: 100%')
+
+    for(let i=0; i<40; i +=8){
+        console.log(data.list[i])
+        //All the values that will go in the elements
+        let date = dayjs(data.list[i].dt_txt).format('M/D/YYYY')
+        let temp = data.list[i].main.temp
+        let humidity = data.list[i].main.humidity
+        let windSpeed = data.list[i].wind.speed
+        let weatherIconURL = `https://openweathermap.org/img/w/${data.list[0].weather[0].icon}.png`
+
+        //create all elements
+        let forcastCard = document.createElement("div")
+        let cardDate = document.createElement("h5")
+        let cardTemp = document.createElement("p")
+        let cardHumidity = document.createElement("p")
+        let cardWindSpeed = document.createElement("p")
+        let cardWeatherIcon = document.createElement("img")
+
+        //style all elements with classes from https://getbootstrap.com/docs/5.0/components/card/
+        //give all the element there content
+        forcastCard.setAttribute('class', 'card text-white bg-secondary m-3 p-2')
+        forcastCard.setAttribute('style', 'width: 18rem; ')
+        cardDate.setAttribute('class', 'card-title')
+        cardDate.textContent = date
+        cardTemp.setAttribute('class', 'card-text')
+        cardTemp.textContent = "Temperature: " + temp + "°F"
+        cardHumidity.setAttribute('class', 'card-text')
+        cardHumidity.textContent = "Humidity: " + humidity + "%"
+        cardWindSpeed.setAttribute('class', 'card-text')
+        cardWindSpeed.textContent = "Wind Speed: " + windSpeed + " MPH"
+        cardWeatherIcon.setAttribute('src', weatherIconURL)
+        cardWeatherIcon.setAttribute('style', 'width: 40%')
+
+        //append all into one card
+        forcastCard.append(cardDate, cardWeatherIcon, cardTemp, cardWindSpeed, cardHumidity)
+
+        //append to the the forcastBody
+        forcastBody.append(forcastCard)
+    }
+    //append all to the html doc
+    weatherForcast.append(forcastTitle, forcastBody)
+    weatherInput.value = ""
 }
 
 
@@ -99,13 +152,14 @@ function getWeather(data){
     })
     .then(function (data) {
         displayWeatherHeader(data)
-        //displayWeatherForcast(data)
+        displayWeatherForcast(data)
     })
 
 }
 
 function getCoordinates(searchInput){
     let requestURL = `${weatherApiRootUrl}/geo/1.0/direct?q=${searchInput}&appid=${weatherApiKey}`
+    console.log(requestURL)
     fetch(requestURL)
     .then(function (data) {
       return data.json();
@@ -115,6 +169,7 @@ function getCoordinates(searchInput){
             alert("Location not valid")
             weatherInput.value = ""
         }else{
+            console.log(data)
             searchHistoryArr.push(weatherInput.value)
             localStorage.setItem('searchHistoryArr', JSON.stringify(searchHistoryArr))
             displayHistory(searchHistoryArr)
