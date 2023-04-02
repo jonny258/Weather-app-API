@@ -45,11 +45,43 @@ function displayHistory(history){
     }
 }
 
+
+function getWeather(data){
+    let name = data.name
+    let lat = data.lat
+    let lon = data.lon
+    let requestURL = `${weatherApiRootUrl}/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${weatherApiKey}`
+    fetch(requestURL)
+    .then(function (data) {
+      return data.json();
+    })
+    .then(function (data) {
+        console.log(data)
+    })
+
+}
+
+function getCoordinates(searchInput){
+    let requestURL = `${weatherApiRootUrl}/geo/1.0/direct?q=${searchInput}&appid=${weatherApiKey}`
+    fetch(requestURL)
+    .then(function (data) {
+      return data.json();
+    })
+    .then(function (data) {
+        if(data.length === 0){
+            alert("Location not valid")
+            weatherInput.value = ""
+        }else{
+            searchHistoryArr.push(weatherInput.value)
+            localStorage.setItem('searchHistoryArr', JSON.stringify(searchHistoryArr))
+            displayHistory(searchHistoryArr)
+            getWeather(data[0])
+        }
+    })
+}
+
 function Search(){
-    searchHistoryArr.push(weatherInput.value)
-    console.log(searchHistoryArr)
-    localStorage.setItem('searchHistoryArr', JSON.stringify(searchHistoryArr))
-    displayHistory(searchHistoryArr)
+    getCoordinates(weatherInput.value)
 }
 
 function init(){
