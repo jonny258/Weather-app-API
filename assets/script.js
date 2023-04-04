@@ -189,3 +189,19 @@ function init(){
 init()
 
 weatherButton.addEventListener("click", Search)
+
+
+
+// JavaScript
+$('#myModal').on('shown.bs.modal', function () {
+    $('#myInput').trigger('focus')
+  })
+
+
+
+
+
+
+
+
+
