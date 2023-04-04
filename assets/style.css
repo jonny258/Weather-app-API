@@ -1,0 +1,20 @@
+.search-box{
+    background-color: lightblue;
+    border: 5px black solid;
+    border-radius: 10px;
+}
+
+.search-box h2{
+    width: 100%;
+    border-bottom: 5px black solid;
+}
+
+header{
+    justify-content: center;
+}
+
+header div{
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}
