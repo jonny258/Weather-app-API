@@ -28,7 +28,6 @@ console.log(searchHistoryArr[0])
 // Creates and sets the clock every second
 function setTime(){
     localTime.textContent = dayjs().format("h:mm:ss")
-    searchTime.textContent = dayjs().format("h:mm:ss")
 }
 setInterval(setTime, 1000)
 
